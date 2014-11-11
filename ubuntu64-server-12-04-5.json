@@ -1,15 +1,19 @@
-{
-    "variables": {
-        "ssh_name": "miguel",
-        "ssh_pass": "lixo",
-        "hostname": "ubuntu64-server-12-04-5",
-        "presseed": "ubuntu64-server-12-04-5.cfg"
+{ 
+   "variables": {
+        "ssh_name"   : "miguel",
+        "ssh_pass"   : "lixo",
+        "hostname"   : "ubuntu64-server-12-04-5",
+        "presseed"   : "ubuntu64-server-12-04-5.cfg",
+        "build_name" : "ubuntu-12.04-5",
+        "aws_access" : "",
+        "aws_key"    : ""
     },
 
-    "builders": [{
+    "builders": [
+        {
         "type"         : "virtualbox-iso",
         "guest_os_type": "Ubuntu_64",
-
+        "name"         : "{{ user `build_name`}}",
         "vboxmanage"   : [
             ["modifyvm", "{{.Name}}", "--vram", "32"]
         ],
@@ -41,5 +45,35 @@
             "keyboard-configuration/variant=USA console-setup/ask_detect=false ",
             "initrd=/install/initrd.gz -- <enter>"
         ]
-    }]
+        },
+        {
+          "type"            : "amazon-ebs",
+          "access_key"      : "{{ user `aws_access` }}",
+          "secret_key"      : "{{ user `aws_key` }}",
+          "instance_type"   : "t2.micro",
+          "ssh_username"    : "ubuntu",
+          "ami_name"        : "{{ user `build_name`}}",
+          "associate_public_ip_address" : true, 
+          "ssh_timeout"     : "20m",
+          "ami_description" : "My Description" ,
+          "tags"            : {
+              "name" : "{{ user `build_name` }}"
+          },
+          "region"          : "eu-west-1",
+          "source_ami"      : "ami-f0b11187",
+          "subnet_id"       : "subnet-cb8a7892",
+          "vpc_id"          : "vpc-9ff330fa"
+        }
+        ],
+
+        "provisioners": [
+          {
+            "type": "shell",
+            "inline": [
+              "sleep 30",
+              "sudo apt-get update",
+              "sudo apt-get install -y git puppet "
+            ]
+          }
+       ]
 }
