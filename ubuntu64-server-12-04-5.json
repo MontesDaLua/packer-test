@@ -11,6 +11,24 @@
 
     "builders": [
         {
+          "type"            : "amazon-ebs",
+          "access_key"      : "{{ user `aws_access` }}",
+          "secret_key"      : "{{ user `aws_key` }}",
+          "instance_type"   : "t2.micro",
+          "ssh_username"    : "ubuntu",
+          "ami_name"        : "{{ user `build_name`}}",
+          "associate_public_ip_address" : true, 
+          "ssh_timeout"     : "20m",
+          "ami_description" : "My Description" ,
+          "tags"            : {
+              "Name" : "{{ user `build_name` }}"
+          },
+          "region"          : "eu-west-1",
+          "source_ami"      : "ami-f0b11187",
+          "subnet_id"       : "subnet-cb8a7892",
+          "vpc_id"          : "vpc-9ff330fa"
+        }
+        {
         "type"         : "virtualbox-iso",
         "guest_os_type": "Ubuntu_64",
         "name"         : "{{ user `build_name`}}",
@@ -46,33 +64,17 @@
             "initrd=/install/initrd.gz -- <enter>"
         ]
         },
-        {
-          "type"            : "amazon-ebs",
-          "access_key"      : "{{ user `aws_access` }}",
-          "secret_key"      : "{{ user `aws_key` }}",
-          "instance_type"   : "t2.micro",
-          "ssh_username"    : "ubuntu",
-          "ami_name"        : "{{ user `build_name`}}",
-          "associate_public_ip_address" : true, 
-          "ssh_timeout"     : "20m",
-          "ami_description" : "My Description" ,
-          "tags"            : {
-              "name" : "{{ user `build_name` }}"
-          },
-          "region"          : "eu-west-1",
-          "source_ami"      : "ami-f0b11187",
-          "subnet_id"       : "subnet-cb8a7892",
-          "vpc_id"          : "vpc-9ff330fa"
-        }
         ],
 
         "provisioners": [
           {
             "type": "shell",
             "inline": [
-              "sleep 30",
+              "sudo apt-add-repository 'deb http://ops-nexus.bgchtest.info:8081/content/repositories/releases stable main' >>/var/tmp/footman.log",
               "sudo apt-get update",
-              "sudo apt-get install -y git puppet "
+              "sudo apt-get install --force-yes -y bgch-bootstrap >>/var/tmp/footman.log 2>&1",
+              "sudo -i /usr/lib/bgch/bootstrap/bootstrapper.sh -p prefermonkeystoapes connectedboiler:prod:bosch-processor >>/var/tmp/footman.log 2>&1",
+              "echo 'done' > /tmp/packer.log"
             ]
           }
        ]

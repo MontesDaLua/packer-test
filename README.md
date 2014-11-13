@@ -10,3 +10,4 @@ packer build -var "aws_access=<your key>" -var "aws_key=<your key > "   ubuntu64
 
 * include name server configuration (?? google 8.8.8.8 )
 
+* add nameserver to preseed config 
