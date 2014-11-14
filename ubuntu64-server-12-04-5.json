@@ -1,15 +1,82 @@
 { 
    "variables": {
-        "ssh_name"   : "miguel",
-        "ssh_pass"   : "lixo",
-        "hostname"   : "ubuntu64-server-12-04-5",
-        "presseed"   : "ubuntu64-server-12-04-5.cfg",
-        "build_name" : "ubuntu-12.04-5",
-        "aws_access" : "",
-        "aws_key"    : ""
+        "ssh_name"          : "miguel",
+        "ssh_pass"          : "lixo",
+        "hostname"          : "ubuntu64-server-12-04-5",
+        "presseed"          : "ubuntu64-server-12-04-5.cfg",
+        "build_name"        : "ubuntu-12.04-5",
+        "aws_access"        : "",
+        "aws_key"           : ""
     },
 
     "builders": [
+        {
+        "type"              : "virtualbox-iso",
+        "guest_os_type"     : "Ubuntu_64",
+        "name"              : "{{ user `build_name`}}",
+        "vboxmanage"        : [
+            ["modifyvm", "{{.Name}}", "--vram", "32"],
+            ["modifyvm", "{{.Name}}", "--nic1", "bridged"], 
+            ["modifyvm", "{{.Name}}", "--bridgeadapter1", "wlan0"]
+
+            ],
+        "disk_size"         : 10000,
+        "output_directory"  : "ubuntu-vbox-{{user `build_name`}}",
+
+        "iso_url"           : "http://releases.ubuntu.com/precise/ubuntu-12.04.5-server-amd64.iso",
+        "iso_checksum"      : "769474248a3897f4865817446f9a4a53",
+        "iso_checksum_type" : "md5",
+
+        "http_directory"    : "{{ pwd }}",
+        "http_port_min"     : 9001,
+        "http_port_max"     : 9001,
+
+        "ssh_username"      : "{{user `ssh_name`}}",
+        "ssh_password"      : "{{user `ssh_pass`}}",
+        "ssh_wait_timeout"  : "20m",
+        "shutdown_command"  : "echo {{user `ssh_pass`}} | sudo -S shutdown -P now",
+        "boot_command"      : [
+            "<esc><esc><enter><wait>",
+            "/install/vmlinuz noapic ",
+            "preseed/url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/{{ user `presseed` }} ",
+            "debian-installer=en_US auto locale=en_US kbd-chooser/method=us ",
+            "hostname={{user `hostname`}} ",
+            "fb=false debconf/frontend=noninteractive ",
+            "keyboard-configuration/modelcode=SKIP keyboard-configuration/layout=USA ",
+            "keyboard-configuration/variant=USA console-setup/ask_detect=false ",
+            "initrd=/install/initrd.gz -- <enter>"
+            ]
+        },
+        {
+        "type"              : "qemu",
+        "iso_url"           : "http://releases.ubuntu.com/precise/ubuntu-12.04.5-server-amd64.iso",
+        "iso_checksum"      : "769474248a3897f4865817446f9a4a53",
+        "iso_checksum_type" : "md5",
+        "output_directory"  : "output_centos_tdhtest",
+        "ssh_wait_timeout"  : "20m",
+        "disk_size"         : 100000,
+        "format"            : "raw",
+        "output_directory"  : "ubuntu-qemu-{{user `build_name`}}",
+        "http_directory"    : "{{ pwd }}",
+        "http_port_min"     : 9001,
+        "http_port_max"     : 9001,
+        "ssh_username"      : "{{user `ssh_name`}}",
+        "ssh_password"      : "{{user `ssh_pass`}}",
+        "net_device"        : "virtio-net",
+        "disk_interface"    : "virtio",
+        "boot_wait"         : "5s",
+        "boot_command"      : [
+            "<esc><esc><enter><wait>",
+            "/install/vmlinuz noapic ",
+            "preseed/url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/{{ user `presseed` }} ",
+            "debian-installer=en_US auto locale=en_US kbd-chooser/method=us ",
+            "hostname={{user `hostname`}} ",
+            "fb=false debconf/frontend=noninteractive ",
+            "keyboard-configuration/modelcode=SKIP keyboard-configuration/layout=USA ",
+            "keyboard-configuration/variant=USA console-setup/ask_detect=false ",
+            "initrd=/install/initrd.gz -- <enter>"
+            ]
+        },
         {
           "type"            : "amazon-ebs",
           "access_key"      : "{{ user `aws_access` }}",
@@ -27,55 +94,19 @@
           "source_ami"      : "ami-f0b11187",
           "subnet_id"       : "subnet-cb8a7892",
           "vpc_id"          : "vpc-9ff330fa"
-        }
-        {
-        "type"         : "virtualbox-iso",
-        "guest_os_type": "Ubuntu_64",
-        "name"         : "{{ user `build_name`}}",
-        "vboxmanage"   : [
-            ["modifyvm", "{{.Name}}", "--vram", "32"]
-        ],
-
-        "disk_size"    : 10000,
-
-        "iso_url"      : "http://releases.ubuntu.com/precise/ubuntu-12.04.5-server-amd64.iso",
-        "iso_checksum" : "769474248a3897f4865817446f9a4a53",
-        "iso_checksum_type": "md5",
-
-        "http_directory" : "{{ pwd }}",
-        "http_port_min" : 9001,
-        "http_port_max" : 9001,
-
-        "ssh_username": "{{user `ssh_name`}}",
-        "ssh_password": "{{user `ssh_pass`}}",
-        "ssh_wait_timeout": "20m",
-
-        "shutdown_command": "echo {{user `ssh_pass`}} | sudo -S shutdown -P now",
-
-        "boot_command" : [
-            "<esc><esc><enter><wait>",
-            "/install/vmlinuz noapic ",
-            "preseed/url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/{{ user `presseed` }} ",
-            "debian-installer=en_US auto locale=en_US kbd-chooser/method=us ",
-            "hostname={{user `hostname`}} ",
-            "fb=false debconf/frontend=noninteractive ",
-            "keyboard-configuration/modelcode=SKIP keyboard-configuration/layout=USA ",
-            "keyboard-configuration/variant=USA console-setup/ask_detect=false ",
-            "initrd=/install/initrd.gz -- <enter>"
-        ]
         },
         ],
 
         "provisioners": [
           {
-            "type": "shell",
-            "inline": [
+            "type"          : "shell",
+            "inline"        : [
               "sudo apt-add-repository 'deb http://ops-nexus.bgchtest.info:8081/content/repositories/releases stable main' >>/var/tmp/footman.log",
               "sudo apt-get update",
               "sudo apt-get install --force-yes -y bgch-bootstrap >>/var/tmp/footman.log 2>&1",
               "sudo -i /usr/lib/bgch/bootstrap/bootstrapper.sh -p prefermonkeystoapes connectedboiler:prod:bosch-processor >>/var/tmp/footman.log 2>&1",
               "echo 'done' > /tmp/packer.log"
-            ]
+              ]
           }
        ]
 }
