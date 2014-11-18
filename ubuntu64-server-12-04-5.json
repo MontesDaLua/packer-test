@@ -46,8 +46,11 @@
              "destination": "tt.sh"
            },
           {
-            "type"          : "shell",
-            "script"        : "provisioners/test.sh"
+            "type"             : "shell",
+            "environment_vars" :  [ "MY_VAR1=My_Value",
+                                    "MY_VAR2={{user `product`}}:{{user `env`}}:{{user `role`}}"
+                                  ],
+            "script"           : "provisioners/test.sh"
           },
           {
             "type"          : "shell",
