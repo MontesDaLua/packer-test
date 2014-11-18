@@ -3,3 +3,4 @@ packer_cache/
 output-virtualbox-iso/
 tmp/
 output*/
+old_config/

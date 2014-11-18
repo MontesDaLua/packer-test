@@ -19,8 +19,7 @@
         "instance_type"     : "",
         "data_volume_size"  : 9,
         "root_volume_size"  : 9,
-        "del_vol_on_term"   : "true",
-        "vol_type"          : "gp2"
+        "del_vol_on_term"   : "true"
     },
 
     "builders": [
@@ -46,13 +45,13 @@
                 "device_name": "/dev/sda1",
                 "delete_on_termination": "{{ user `del_vol_on_term`}}",
                 "volume_size": "{{user `root_volume_size`}}",
-                "volume_type": "{{user `vol_type`}}"
+                "volume_type": "gp2"
               },
               {
                 "device_name": "/dev/sdb",
                 "delete_on_termination": "{{ user `del_vol_on_term`}}",
                 "volume_size": "{{user `data_volume_size`}}",
-                "volume_type": "{{user `vol_type`}}"
+                "volume_type": "gp2"
               }
            ]
         }

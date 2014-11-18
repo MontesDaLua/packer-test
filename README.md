@@ -18,7 +18,7 @@ packer build \
   -var "instance_type=t2.micro" \
   -var "root_volume_size=10" \
   -var "data_volume_size=10" \
-  ubuntu64-server-12-04-5.json
+  config_files/ubuntu64-server-12-04-5.json
 
 # Arguments 
 
