@@ -12,10 +12,15 @@
         "env"               : "",
         "role"              : "",
         "password"          : "",
-        "region"            : "eu-west-1",
-        "source_ami"        : "ami-f0b11187",
-        "subnet_id"         : "subnet-cb8a7892",
-        "vpc_id"            : "vpc-9ff330fa"
+        "region"            : "",
+        "source_ami"        : "",
+        "subnet_id"         : "",
+        "vpc_id"            : "",
+        "instance_type"     : "",
+        "data_volume_size"  : 9,
+        "root_volume_size"  : 9,
+        "del_vol_on_term"   : "true",
+        "vol_type"          : "gp2"
     },
 
     "builders": [
@@ -35,31 +40,33 @@
           "region"                      : "{{ user `region`}}",
           "source_ami"                  : "{{ user `source_ami`}}",
           "subnet_id"                   : "{{ user `subnet_id`}}",
-          "vpc_id"                      : "{{ user `vpc_id`}}"
+          "vpc_id"                      : "{{ user `vpc_id`}}",
+          "ami_block_device_mappings": [
+              {
+                "device_name": "/dev/sda1",
+                "delete_on_termination": "{{ user `del_vol_on_term`}}",
+                "volume_size": "{{user `root_volume_size`}}",
+                "volume_type": "{{user `vol_type`}}"
+              },
+              {
+                "device_name": "/dev/sdb",
+                "delete_on_termination": "{{ user `del_vol_on_term`}}",
+                "volume_size": "{{user `data_volume_size`}}",
+                "volume_type": "{{user `vol_type`}}"
+              }
+           ]
         }
         ],
 
         "provisioners": [
-           {
-             "type": "file",
-             "source": "provisioners/test.sh",
-             "destination": "tt.sh"
-           },
           {
             "type"             : "shell",
-            "environment_vars" :  [ "MY_VAR1=My_Value",
-                                    "MY_VAR2={{user `product`}}:{{user `env`}}:{{user `role`}}"
+            "environment_vars" :  [ "PASSWORD={{user `password`}}",
+                                    "IDENTIFICATION={{user `product`}}:{{user `env`}}:{{user `role`}}", 
+                                    "LOGFILE=/var/tmp/footman.log",
+                                    "BASE_REPO=http://ops-nexus.bgchtest.info:8081/content/repositories/releases stable main"
                                   ],
-            "script"           : "provisioners/test.sh"
-          },
-          {
-            "type"          : "shell",
-            "inline"        : [
-              "sudo apt-add-repository 'deb http://ops-nexus.bgchtest.info:8081/content/repositories/releases stable main' >>/var/tmp/footman.log",
-              "sudo apt-get update",
-              "sudo apt-get install --force-yes -y bgch-bootstrap >>/var/tmp/footman.log 2>&1",
-              "sudo -i /usr/lib/bgch/bootstrap/bootstrapper.sh -p {{user `password`}} {{user `product`}}:{{user `env`}}:{{user `role`}} >>/var/tmp/footman.log 2>&1"
-              ]
-          }
+            "script"           : "provisioners/install.sh"
+          } 
        ]
 }

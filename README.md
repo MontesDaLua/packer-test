@@ -15,6 +15,9 @@ packer build \
   -var "source_ami=ami-f0b11187" \
   -var "subnet_id=subnet-cb8a7892" \
   -var "vpc_id=vpc-9ff330fa" \
+  -var "instance_type=t2.micro" \
+  -var "root_volume_size=10" \
+  -var "data_volume_size=10" \
   ubuntu64-server-12-04-5.json
 
 # Arguments 
@@ -31,7 +34,11 @@ packer build \
  
 * vpc_id, subnet_id : vpc id/subnet_id to use while creating the AMI 
 
+* instance_type : amazon instance type 
 
+* root_volume_size"  : Size in Gb for the root volume
+
+* data_volume_size"   : Size in Gb for the Data  volume
 
 ## Arguments for botostarpper  (https://github.com/ConnectedHomes/bgch-bootstrap/blob/master/docs/README-bootstrapper.md )
 
@@ -41,14 +48,10 @@ packer build \
 
 * role :  Puppet role (bosch-processor, .... )
 
-# TODO:
+# Requisites
 
-* Check why user miguel is not created 
+## Packer 
 
-* use script and not inline shell commands 
+Check install instructions at https://www.packer.io/docs/installation.html
 
-* security groupd for the instance running new AMI 
 
-* S3 usage 
-
-* Document requisites 
