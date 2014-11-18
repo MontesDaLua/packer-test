@@ -35,23 +35,27 @@
           "region"                      : "{{ user `region`}}",
           "source_ami"                  : "{{ user `source_ami`}}",
           "subnet_id"                   : "{{ user `subnet_id`}}",
-          "vpc_id"                      : "{{ user `vpc_id`}}",
+          "vpc_id"                      : "{{ user `vpc_id`}}"
         }
         ],
 
         "provisioners": [
            {
              "type": "file",
-             "source": "provisioners/files/mount-ephemeral.sh",
-             "destination": "mount-ephemeral"
+             "source": "provisioners/test.sh",
+             "destination": "tt.sh"
            },
+          {
+            "type"          : "shell",
+            "script"        : "provisioners/test.sh"
+          },
           {
             "type"          : "shell",
             "inline"        : [
               "sudo apt-add-repository 'deb http://ops-nexus.bgchtest.info:8081/content/repositories/releases stable main' >>/var/tmp/footman.log",
               "sudo apt-get update",
               "sudo apt-get install --force-yes -y bgch-bootstrap >>/var/tmp/footman.log 2>&1",
-              "sudo -i /usr/lib/bgch/bootstrap/bootstrapper.sh -p {{user `password`}} {{user `product`}}:{{user `env`}}:{{user `role`}} >>/var/tmp/footman.log 2>&1",
+              "sudo -i /usr/lib/bgch/bootstrap/bootstrapper.sh -p {{user `password`}} {{user `product`}}:{{user `env`}}:{{user `role`}} >>/var/tmp/footman.log 2>&1"
               ]
           }
        ]
