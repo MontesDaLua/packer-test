@@ -20,6 +20,30 @@ packer build \
   -var "data_volume_size=10" \
   config_files/ubuntu64-server-12-04-5.json
 
+at the end ww'll get the ami-id:
+
+	....
+	==> Builds finished. The artifacts of successful builds are:
+	--> amazon-ebs: AMIs were created:
+	
+	eu-west-1: ami-f47acc83
+
+
+The AMI  name is  allways ubuntu-12.04-5 and one instance can be started with :
+
+export REGION="eu-west-1"
+aws ec2 create-security-group --region=$REGION --group-name TstSecGroup --description "Test Security group for test instance " 
+
+	{
+    	"GroupId": "sg-ce71f1ab"
+	}
+
+aws ec2 authorize-security-group-ingress  --region=$REGION --group-id sg-ce71f1ab --cidr "0.0.0.0/0" --protocol tcp --port 22
+
+aws ec2 run-instances --count=1 --key-name=<your key name > --image-id=ami-f47acc83 --instance-type=t2.micro --region=$REGION --security-group-ids sg-ce71f1ab
+
+ssh YourUserName@HostIpAddress
+
 # Arguments 
 
 ## Build arguments 
