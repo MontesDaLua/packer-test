@@ -54,4 +54,6 @@ packer build \
 
 Check install instructions at https://www.packer.io/docs/installation.html
 
+# TODO
 
+* Initialize new device for usage on first run  (Check Standard mount point )
