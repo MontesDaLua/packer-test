@@ -83,11 +83,18 @@ Now we can ssh the machine
 
 ## Arguments for botostarpper  (https://github.com/ConnectedHomes/bgch-bootstrap/blob/master/docs/README-bootstrapper.md )
 
-* product   :  connectedboiler , ....
+* product   :  connectedboiler , ops, hivehome ..
 
 * env :  Puppet environment
 
 * role :  Puppet role (bosch-processor, .... )
+
+# Tested product / roles combinations as 2014-11-19 
+
+* connectedboiler / bosch-processor
+
+* ops / bosch-processor
+
 
 # Requisites
 
