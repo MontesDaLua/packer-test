@@ -95,6 +95,7 @@ Now we can ssh the machine
 
 * ops / bosch-processor
 
+* ops / billomatic
 
 # Requisites
 
