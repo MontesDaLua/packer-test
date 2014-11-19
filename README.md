@@ -1,6 +1,12 @@
 # BGCH box build with packer 
 
-Creates an ubuntu 12.04 BGCH box for Virtual box and AMAZON ami 
+Creates an ubuntu 12.04 BGCH box AMAZON ami. 
+
+Features :
+
+* Can also create for  vagrant, openstack, ... 
+
+* Can deploy any BGCH project , 
 
 # Run Example 
 
@@ -29,7 +35,7 @@ at the end ww'll get the ami-id:
 		eu-west-1: ami-f47acc83
 
 
-The AMI  name is  allways ubuntu-12.04-5 and one instance can be started with :
+The AMI Name is  ubuntu-12.04-5-$product-$env-$role and one instance can be started with :
 
 	export REGION="eu-west-1"
 	aws ec2 create-security-group --region=$REGION --group-name TstSecGroup --description "Test Security group for test instance " 
@@ -49,15 +55,25 @@ Now we can ssh the machine
 
 ## Build arguments 
 
-* IP_ADDRESS : Just needed for virtualbox .......
+### Virtual Box 
+
+* IP_ADDRESS : computer running packer ip address 
+
+### AWS 
+
+#### Generic 
 
 * aws_access, aws_key : AWS credentials 
 
-* region :  Aws region where to create the AMI 
+#### Build 
+
+* vpc_id, subnet_id : vpc id/subnet_id to use while creating the AMI 
 
 * source_ami : source AMI to use. In eu-west-1 the ubuntu server 12.04.5 id is ami-f0b11187. Check ami id in other regions , or for ubuntu future versions. 
- 
-* vpc_id, subnet_id : vpc id/subnet_id to use while creating the AMI 
+
+#### Result 
+
+* region :  Aws region where to create the AMI 
 
 * instance_type : amazon instance type 
 
@@ -67,7 +83,7 @@ Now we can ssh the machine
 
 ## Arguments for botostarpper  (https://github.com/ConnectedHomes/bgch-bootstrap/blob/master/docs/README-bootstrapper.md )
 
-* product   :  ( connectedboiler , ....) 
+* product   :  connectedboiler , ....
 
 * env :  Puppet environment
 
@@ -81,4 +97,6 @@ Check install instructions at https://www.packer.io/docs/installation.html
 
 # TODO
 
-* Initialize new device for usage on first run  (Check Standard mount point )
+* Initialize new device for usage on first run  (Check Standard mount point );
+
+* Make AMI available in a region list 

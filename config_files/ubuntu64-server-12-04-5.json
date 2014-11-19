@@ -29,7 +29,7 @@
           "secret_key"                  : "{{ user `aws_key` }}",
           "instance_type"               : "t2.micro",
           "ssh_username"                : "ubuntu",
-          "ami_name"                    : "{{ user `build_name`}}",
+          "ami_name"                    : "{{ user `product`}}-{{ user `env`}}-{{ user `role`}}-{{ user `build_name`}}",
           "associate_public_ip_address" : true,
           "ssh_timeout"                 : "20m",
           "ami_description"             : "My Description" ,
